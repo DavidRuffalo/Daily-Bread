@@ -1,123 +1,69 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
+import type { Session } from '@supabase/supabase-js'
+import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
+import LoginForm from './components/LoginForm'
+import { supabase } from './lib/supabase'
 
-function App() {
-  const [count, setCount] = useState(0)
+
+export default function App() {
+  const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [signingOut, setSigningOut] = useState(false)
+  const [logoutError, setLogoutError] = useState('')
+
+  useEffect(() => {
+    const { data: { subscription } } =
+      supabase.auth.onAuthStateChange((_event, nextSession) => {
+        setSession(nextSession)
+        setLoading(false)
+      })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function handleLogout() {
+    if (signingOut) return
+
+    setSigningOut(true)
+    setLogoutError('')
+
+    try {
+      const { error } = await supabase.auth.signOut({
+        scope: 'local',
+      })
+
+      if (error) {
+        setLogoutError(error.message)
+      }
+    } catch {
+      setLogoutError('Unable to sign out. Please try again.')
+    } finally {
+      setSigningOut(false)
+    }
+  }
+
+  if (loading) {
+    return <p role="status">Checking your session...</p>
+  }
+
+  if (!session) {
+    return <LoginForm />
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <Button
-          type="button"
-          variant="contained"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </Button>
-      </section>
+    <Stack spacing={2} sx={{ maxWidth: 400, mx: 'auto', p: 3 }}>
+      <h1>Welcome to Daily Bread</h1>
+      <p>Signed in as {session.user.email}</p>
+      <Button
+        variant="outlined"
+        onClick={handleLogout}
+        disabled={signingOut}
+      >
+        {signingOut ? 'Signing out...' : 'Sign out'}
+      </Button>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      {logoutError && <p role="alert">{logoutError}</p>}
+    </Stack>
   )
 }
-
-export default App

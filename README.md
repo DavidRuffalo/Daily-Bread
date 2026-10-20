@@ -1,75 +1,95 @@
-# React + TypeScript + Vite
+# Daily Bread
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web app for small groups to stay consistent with shared goals,
+habits, and commitments.
 
-Currently, two official plugins are available:
+Built with React, TypeScript, Vite, Material UI, and Supabase.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Current functionality
 
-## React Compiler
+- Email/password sign-in with an existing account
+- Signed-in screen showing the current user's email
+- Session restoration after refreshing
+- Sign-out for the current session
+- Loading states and authentication error messages
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Signup, password reset, profiles, and group features are planned.
 
-## Expanding the ESLint configuration
+## Requirements
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js and npm
+- A Supabase project
+- That project's URL and publishable key
+- A confirmed test account in that project
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Development has been verified with Node.js 24.20.0 and npm 11.19.0.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Run locally
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Run these commands from the repository root.
 
+1. Install the dependency versions recorded in the lockfile:
+
+   ```powershell
+   npm.cmd ci
+   ```
+
+2. If `.env.local` does not already exist, create it:
+
+   ```powershell
+   Copy-Item .env.example .env.local
+   ```
+
+3. In `.env.local`, fill in your project's settings:
+
+   ```dotenv
+   VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_your-key-here
+   ```
+
+   These values are available to browser code. Use the publishable key,
+   never a secret or service-role key. `.env.local` is ignored by Git.
+
+4. Start the development server:
+
+   ```powershell
+   npm.cmd run dev
+   ```
+
+5. Open the Local URL printed in the terminal.
+
+Restart the server after changing environment settings.
+Press Ctrl+C to stop it.
+
+On macOS or Linux, use `npm` instead of `npm.cmd`.
+
+## Test account
+
+A project maintainer can create a development account through
+Supabase → Authentication → Users → Add user → Create new user.
+
+Use an email you control and a private test password. Auto Confirm User
+can mark this specific test account as confirmed without an email link.
+This does not test the email-verification flow.
+
+The app currently supports sign-in with existing accounts.
+
+## Check the app
+
+```powershell
+npm.cmd run lint
+npm.cmd run build
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Manually verify:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Correct credentials open the welcome screen.
+- Refreshing keeps the user signed in.
+- Sign out returns to the login form.
+- Refreshing after sign-out keeps the user signed out.
+- An incorrect password displays an error.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Planning docs
 
-```
+Project planning and the ongoing app-setup handoff are currently
+maintained on the separate `doc/planning` branch.
