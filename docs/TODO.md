@@ -1,19 +1,21 @@
 # TODO
 
+Progress below includes app commit `df2c3e8`, pushed on `feature/app-setup`; PR/merge status has not been verified. See [app-setup.md](app-setup.md) for the current PR goal, completed checks, and wrap-up work.
+
 ## Setup (shared)
 
-- [ ] Create the React + Vite app
-- [ ] Create the Supabase project
-- [ ] Put Supabase keys in `.env.local` (gitignored)
-- [ ] Add a README with run steps
+- [x] Create the React + Vite app
+- [x] Create the Supabase project
+- [x] Put Supabase keys in `.env.local` (gitignored)
+- [x] Add a README with run steps
 
 ## Track A: Auth
 
-- [ ] Set up the Supabase client
+- [x] Set up the Supabase client
 - [ ] Sign-up page
-- [ ] Log-in page
-- [ ] Log out
-- [ ] Session / auth state handling
+- [x] Log-in page
+- [x] Log out
+- [x] Session / auth state handling
 - [ ] Protected-route wrapper
 - [ ] `profiles` table linked to `auth.users`
 
