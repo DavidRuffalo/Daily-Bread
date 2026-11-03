@@ -89,6 +89,23 @@ Manually verify:
 - Refreshing after sign-out keeps the user signed out.
 - An incorrect password displays an error.
 
+## GitHub Pages
+
+The app is published at https://davidruffalo.github.io/Daily-Bread/.
+The deployment workflow builds and publishes pushes to `feature/app-setup`.
+
+One-time repository setup:
+
+1. In **Settings > Pages**, set **Source** to **GitHub Actions**. Vite needs
+   a build step; publishing the source branch directly does not build the app.
+2. In **Settings > Secrets and variables > Actions > Variables**, add
+   `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` using the same
+   public browser settings as `.env.local`. Never use a secret or service-role key.
+3. Push to `feature/app-setup`, then check **Actions > Deploy to GitHub Pages**.
+
+Vite's base path is `/Daily-Bread/` so built assets load at the project URL.
+The workflow fails before publishing if either Supabase setting is missing.
+
 ## Planning docs
 
 Project planning and the ongoing app-setup handoff are currently
