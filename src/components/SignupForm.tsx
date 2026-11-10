@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { isAuthRetryableFetchError } from '@supabase/supabase-js'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -35,7 +36,11 @@ export default function SignupForm({ onSignIn }: SignupFormProps) {
       })
 
       if (error) {
-        setErrorMessage(error.message)
+        setErrorMessage(
+          isAuthRetryableFetchError(error)
+            ? 'Unable to connect. Please check your internet connection and try again.'
+            : error.message,
+        )
         return
       }
 
