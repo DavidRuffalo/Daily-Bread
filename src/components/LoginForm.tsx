@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import Button from '@mui/material/Button'
 import { supabase } from '../lib/supabase'
 import Stack from '@mui/material/Stack'
@@ -8,11 +8,43 @@ type LoginFormProps = {
     onSignup: () => void
 }
 
+function getConfirmationError(hash: string) {
+    const params = new URLSearchParams(hash.slice(1))
+    if (!params.has('error') && !params.has('error_code') && !params.has('error_description')) {
+        return ''
+    }
+
+    if (params.get('error_code') === 'otp_expired') {
+        return 'This email link is invalid, expired, or has already been used. If you already confirmed your email, sign in below. Otherwise, use the latest confirmation email.'
+    }
+
+    return 'We could not confirm your email with this link. Please use the latest confirmation email, or sign in if your email is already confirmed.'
+}
+
 export default function LoginForm({ onSignup }: LoginFormProps) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [pending, setPending] = useState(false)
     const [message, setMessage] = useState('')
+    const [confirmationError, setConfirmationError] = useState(
+        () => getConfirmationError(window.location.hash),
+    )
+
+    useEffect(() => {
+        if (!getConfirmationError(window.location.hash)) return
+
+        const params = new URLSearchParams(window.location.hash.slice(1))
+        params.delete('error')
+        params.delete('error_code')
+        params.delete('error_description')
+        const remainingHash = params.toString()
+        window.history.replaceState(
+            window.history.state,
+            '',
+            window.location.pathname + window.location.search
+                + (remainingHash ? `#${remainingHash}` : ''),
+        )
+    }, [])
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -20,6 +52,7 @@ export default function LoginForm({ onSignup }: LoginFormProps) {
 
         setPending(true)
         setMessage('')
+        setConfirmationError('')
 
         try {
             const { error } = await supabase.auth.signInWithPassword({
@@ -49,6 +82,7 @@ export default function LoginForm({ onSignup }: LoginFormProps) {
             sx={{ maxWidth: 400, mx: 'auto', p: 3 }}
         >
             <h1>Sign in to Daily Bread</h1>
+            {confirmationError && <p role="alert">{confirmationError}</p>}
             <TextField
                 label="Email"
                 type="email"

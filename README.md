@@ -113,6 +113,7 @@ Manually verify:
 - An incorrect password displays an error.
 - A rejected signup displays an error and allows another attempt.
 - An offline signup request shows connection and retry guidance, then enables the form again.
+- An expired or already-used confirmation link shows an explanation on the sign-in screen.
 
 On November 10, 2026, David reported successful local browser checks for
 form navigation, signup feedback and password clearing, email delivery,
@@ -121,8 +122,11 @@ after refresh, and sign-out followed by a signed-out refresh. A one-character
 password was rejected with a minimum-six-character error, and David confirmed
 the form remained editable afterward. Offline signup displayed connection
 and retry guidance, and the submit button became available again, as shown
-in David's browser screenshot. Expired or already-used confirmation links
-and the deployed signup flow have not yet been verified.
+in David's browser screenshot. David also verified that an already-used
+confirmation link returning `error_code=otp_expired` displayed guidance on
+the sign-in screen, removed the error fields from the URL, and still allowed
+normal sign-in afterward. A newly expired link and the deployed signup flow
+have not yet been verified.
 
 ## GitHub Pages
 
