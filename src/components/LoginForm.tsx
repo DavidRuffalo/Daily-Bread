@@ -4,7 +4,11 @@ import { supabase } from '../lib/supabase'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 
-export default function LoginForm() {
+type LoginFormProps = {
+    onSignup: () => void
+}
+
+export default function LoginForm({ onSignup }: LoginFormProps) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [pending, setPending] = useState(false)
@@ -66,6 +70,9 @@ export default function LoginForm() {
             </Button>
 
             {message && <p role="status">{message}</p>}
+            <Button type="button" onClick={onSignup} disabled={pending}>
+                Create an account
+            </Button>
         </Stack>
     )
 }

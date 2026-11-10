@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import LoginForm from './components/LoginForm'
+import SignupForm from './components/SignupForm'
 import { supabase } from './lib/supabase'
 
 
@@ -11,6 +12,7 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [signingOut, setSigningOut] = useState(false)
   const [logoutError, setLogoutError] = useState('')
+  const [authScreen, setAuthScreen] = useState<'login' | 'signup'>('login')
 
   useEffect(() => {
     const { data: { subscription } } =
@@ -48,7 +50,9 @@ export default function App() {
   }
 
   if (!session) {
-    return <LoginForm />
+    return authScreen === 'signup'
+      ? <SignupForm onSignIn={() => setAuthScreen('login')} />
+      : <LoginForm onSignup={() => setAuthScreen('signup')} />
   }
 
   return (
