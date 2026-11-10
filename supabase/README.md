@@ -66,8 +66,10 @@ successful retry after reconnecting; the new name persisted after reload.
 David then verified that a fresh signup through Supabase Auth could load its
 empty profile form. A final hosted read-only check confirmed three accounts,
 three profiles, no missing profiles, and the migration-history record.
-Recovery from a profile-load failure and the deployed profile UI have not
-yet been verified.
+David also verified that a blocked profile-load request displayed an error
+and retry button, and that removing the block and retrying restored the
+saved profile without refreshing. The deployed profile UI has not yet
+been verified.
 
 References: [Supabase profiles](https://supabase.com/docs/guides/auth/managing-user-data),
 [row-level security](https://supabase.com/docs/guides/database/postgres/row-level-security),

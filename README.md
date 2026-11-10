@@ -142,8 +142,10 @@ attempt. After restoring the connection, David saved the draft successfully
 and verified it after reload. David also verified that a freshly signed-up
 account loaded the empty profile form. A subsequent hosted read-only check
 confirmed three accounts, three profiles, and no accounts missing profiles.
-Recovery from a profile-load failure and the deployed profile UI have not
-yet been verified. See
+Blocking the profile-load request displayed an error and retry button.
+After disabling the block, David verified that retry restored the saved
+profile without refreshing. The deployed profile UI has not yet been
+verified. See
 [`supabase/README.md`](supabase/README.md) for database setup and verification.
 
 ## GitHub Pages
