@@ -45,6 +45,11 @@ record, enabled RLS, authenticated-only RPC execution, denied direct joins,
 zero remaining fixture accounts, and zero groups/memberships before browser
 testing.
 
+David's browser screenshot shows the new group in My groups with the Owner
+label. A hosted read-only check afterward found one group and one matching
+creator-owner membership. The screenshot alone does not establish whether
+the page was reloaded before it was taken.
+
 Browser checks still pending:
 
 - Create a named group; confirm it appears with Owner and survives reload.
