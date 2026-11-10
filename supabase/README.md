@@ -23,6 +23,48 @@ Row-level security restricts which row they can access; column grants
 protect `id` and `created_at`. Browser clients cannot insert or delete
 profiles, and signed-out clients have no profile access.
 
+## Groups
+
+`migrations/20261110010000_create_groups.sql` adds `groups`, `group_members`,
+and the `create_group(group_name text, group_id uuid)` RPC. Group names are
+trimmed and must contain 1 to 80 characters. Names are not unique. The RPC
+assigns the authenticated caller as creator and owner in one transaction.
+The caller supplies a UUID so retrying the same ID and name returns the
+original group; an ID belonging to another creator cannot be reused or read.
+
+Both tables have RLS and only SELECT grants for authenticated clients.
+Users can read groups they belong to and only their own membership rows.
+The membership policy does not query groups, avoiding recursive policies.
+There are no direct client writes, self-joining, or role changes. The RPC
+uses a fixed empty search path, qualified table names, an explicit identity
+check, and EXECUTE granted only to authenticated users. Only trusted server
+operations may add other members until invite redemption is implemented.
+
+Deleting an account administratively removes its memberships and groups it
+created; deleting a group removes its memberships. No account/group deletion
+UI or ownership transfer is included. The unique owner index permits at most
+one owner per group; the create RPC ensures every newly created group has one.
+
+Run the rolled-back role/access checks with:
+
+```powershell
+npx.cmd supabase db query --remote=<project-ref> --file supabase/tests/groups_access.sql --yes
+```
+
+These fixtures also force owner insertion to fail to check atomic rollback,
+and test retrying an ID without duplicating the group. As with profile tests,
+these checks impersonate database roles; they do not test browser sessions
+or the HTTP API. See [the groups PR plan](../docs/group-creation.md) for the
+browser checklist and feature boundaries.
+
+On November 10, 2026, both migrations and both access-test files passed in
+isolated PGlite. The groups migration was then applied to the configured
+hosted `daily-bread` project and recorded in migration history. Hosted
+groups access tests passed and rolled back all fixture changes. Follow-up
+read-only verification confirmed RLS on both tables, authenticated-only
+creation, denied direct membership inserts, and zero fixture users or group
+rows remaining. Browser verification of groups is still pending.
+
 ## Apply and verify
 
 After reviewing the migration:
@@ -73,4 +115,5 @@ been verified.
 
 References: [Supabase profiles](https://supabase.com/docs/guides/auth/managing-user-data),
 [row-level security](https://supabase.com/docs/guides/database/postgres/row-level-security),
-and [column permissions](https://supabase.com/docs/guides/database/postgres/column-level-security).
+[column permissions](https://supabase.com/docs/guides/database/postgres/column-level-security),
+and [database functions](https://supabase.com/docs/guides/database/functions).

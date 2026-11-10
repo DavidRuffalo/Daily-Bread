@@ -5,6 +5,7 @@ import Button from '@mui/material/Button'
 import LoginForm from './components/LoginForm'
 import SignupForm from './components/SignupForm'
 import ProfileForm from './components/ProfileForm'
+import GroupsDashboard from './components/GroupsDashboard'
 import { supabase } from './lib/supabase'
 
 
@@ -61,6 +62,7 @@ export default function App() {
       <h1>Welcome to Daily Bread</h1>
       <p>Signed in as {session.user.email}</p>
       <ProfileForm key={session.user.id} userId={session.user.id} />
+      <GroupsDashboard key={`groups-${session.user.id}`} userId={session.user.id} />
       <Button
         variant="outlined"
         onClick={handleLogout}
