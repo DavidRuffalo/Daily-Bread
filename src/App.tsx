@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import LoginForm from './components/LoginForm'
 import SignupForm from './components/SignupForm'
+import ProfileForm from './components/ProfileForm'
 import { supabase } from './lib/supabase'
 
 
@@ -59,6 +60,7 @@ export default function App() {
     <Stack spacing={2} sx={{ maxWidth: 400, mx: 'auto', p: 3 }}>
       <h1>Welcome to Daily Bread</h1>
       <p>Signed in as {session.user.email}</p>
+      <ProfileForm key={session.user.id} userId={session.user.id} />
       <Button
         variant="outlined"
         onClick={handleLogout}

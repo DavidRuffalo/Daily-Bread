@@ -14,8 +14,9 @@ Built with React, TypeScript, Vite, Material UI, and Supabase.
 - Session restoration after refreshing
 - Sign-out for the current session
 - Loading states and authentication error messages
+- Load, edit, and clear your display name on the signed-in screen
 
-Password reset, profiles, and group features are planned.
+Password reset and group features are planned.
 
 ## Requirements
 
@@ -114,6 +115,9 @@ Manually verify:
 - A rejected signup displays an error and allows another attempt.
 - An offline signup request shows connection and retry guidance, then enables the form again.
 - An expired or already-used confirmation link shows an explanation on the sign-in screen.
+- A saved display name appears in the welcome message and survives refreshing.
+- Clearing the display name saves an unset name and restores the default heading.
+- A profile load or save failure provides feedback and allows retrying.
 
 On November 10, 2026, David reported successful local browser checks for
 form navigation, signup feedback and password clearing, email delivery,
@@ -127,6 +131,20 @@ confirmation link returning `error_code=otp_expired` displayed guidance on
 the sign-in screen, removed the error fields from the URL, and still allowed
 normal sign-in afterward. A newly expired link and the deployed signup flow
 have not yet been verified.
+
+The profiles migration and hosted SQL access checks have passed. On November 10,
+2026, David verified saving a display name and retaining it after reload,
+clearing the name and retaining the empty field and default heading after
+reload, and reading and updating separate names across two accounts without
+overwriting either account's profile. An offline save displayed an error,
+retained the draft name and previous welcome heading, and enabled another
+attempt. After restoring the connection, David saved the draft successfully
+and verified it after reload. David also verified that a freshly signed-up
+account loaded the empty profile form. A subsequent hosted read-only check
+confirmed three accounts, three profiles, and no accounts missing profiles.
+Recovery from a profile-load failure and the deployed profile UI have not
+yet been verified. See
+[`supabase/README.md`](supabase/README.md) for database setup and verification.
 
 ## GitHub Pages
 
@@ -149,3 +167,6 @@ The workflow fails before publishing if either Supabase setting is missing.
 
 Project planning and the ongoing app-setup handoff are currently
 maintained on the separate `doc/planning` branch.
+
+Database migrations and access-check instructions are in
+[`supabase/README.md`](supabase/README.md).
