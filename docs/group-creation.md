@@ -47,19 +47,23 @@ testing.
 
 David's browser screenshot shows the new group in My groups with the Owner
 label. A hosted read-only check afterward found one group and one matching
-creator-owner membership. The screenshot alone does not establish whether
-the page was reloaded before it was taken.
+creator-owner membership. David then confirmed that opening the group and
+returning to My groups worked, and that a second account could not see the
+first account's group. He created a separate group on the second account,
+verified that it remained with Owner after reload, and returned to the
+first account to confirm that it still showed only its original group.
 
-Browser checks still pending:
+David also verified that offline group creation displayed connection
+guidance, retained the entered name, and allowed another attempt. After
+reconnecting and retrying, the new group appeared once. An offline group
+refresh displayed an error and Retry loading groups; after reconnecting,
+retry restored the groups without reloading the page. The browser rejected
+an 81-character name with length guidance, and the Create group button
+remained disabled for spaces-only input.
 
-- Create a named group; confirm it appears with Owner and survives reload.
-- Open the group and return to My groups.
-- Switch accounts; the first account's group must not appear. Create a
-  separate group and verify each account retains only its own groups.
-- Reject a name longer than 80 characters; an empty or spaces-only name
-  must not submit.
-- Block creation, confirm feedback and retained input, unblock and retry.
-- Block group loading, confirm feedback, unblock and retry without reload.
+The planned local browser checks are complete. These browser checks cover
+an offline request followed by a successful retry; replaying a committed
+creation after a lost response is covered by the SQL retry test.
 
 Member visibility is covered by SQL fixtures; joining via the UI will be
 tested with the invite feature. The deployed groups UI is not yet verified.

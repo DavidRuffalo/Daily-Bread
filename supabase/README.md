@@ -63,7 +63,14 @@ hosted `daily-bread` project and recorded in migration history. Hosted
 groups access tests passed and rolled back all fixture changes. Follow-up
 read-only verification confirmed RLS on both tables, authenticated-only
 creation, denied direct membership inserts, and zero fixture users or group
-rows remaining. Browser verification of groups is still pending.
+rows remaining before browser testing. David subsequently verified group
+creation and the Owner label, persistence after reload, group detail/back
+navigation, and separate groups across two accounts. Offline creation
+retained the draft and allowed a successful retry with one group listed;
+offline group loading showed feedback and recovered through Retry loading
+groups without a page reload. An 81-character name was rejected, and
+spaces-only input kept Create group disabled. The planned local browser
+checks are complete; the deployed groups UI is still unverified.
 
 ## Apply and verify
 
