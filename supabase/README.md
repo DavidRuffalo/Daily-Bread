@@ -35,10 +35,10 @@ original group; an ID belonging to another creator cannot be reused or read.
 Both tables have RLS and only SELECT grants for authenticated clients.
 Users can read groups they belong to and only their own membership rows.
 The membership policy does not query groups, avoiding recursive policies.
-There are no direct client writes, self-joining, or role changes. The RPC
+There are no direct client writes or role changes. The create RPC
 uses a fixed empty search path, qualified table names, an explicit identity
-check, and EXECUTE granted only to authenticated users. Only trusted server
-operations may add other members until invite redemption is implemented.
+check, and EXECUTE granted only to authenticated users. The invite RPC
+described below is the supported way for another account to join.
 
 Deleting an account administratively removes its memberships and groups it
 created; deleting a group removes its memberships. No account/group deletion
@@ -71,6 +71,44 @@ offline group loading showed feedback and recovered through Retry loading
 groups without a page reload. An 81-character name was rejected, and
 spaces-only input kept Create group disabled. The planned local browser
 checks are complete; the deployed groups UI is still unverified.
+
+## Group invites
+
+`migrations/20261110020000_create_group_invites.sql` adds `group_invites`
+with one row per group. The row stores a SHA-256 hash of a random token,
+creation time, and expiry. The raw token is returned only when creating
+a link. The table has RLS enabled and no direct browser grants.
+
+| RPC | Access and behavior |
+| --- | --- |
+| `create_group_invite(target_group_id)` | Owner only. Creates a reusable seven-day link and replaces the previous link. |
+| `revoke_group_invite(target_group_id)` | Owner only. Removes the current invite; existing memberships remain. Safe to repeat. |
+| `preview_group_invite(invite_token)` | Signed-in holder of a valid link. Returns the group name, ID, expiry, and whether the caller already belongs. Does not join. |
+| `join_group_by_invite(invite_token)` | Signed-in holder of a valid link. Adds the caller as member and returns the group. Existing membership and owner roles remain unchanged. |
+
+Each function has an empty search path, checks the authenticated identity,
+and has EXECUTE granted only to authenticated users. The join locks and
+rechecks the invite before inserting membership, so a previously rendered
+preview cannot bypass later expiry or revocation. The membership primary
+key prevents duplicate joins. Deleting a group cascades to its invite.
+
+Run the rolled-back access checks with:
+
+```powershell
+npx.cmd supabase db query --remote=<project-ref> --file supabase/tests/group_invites_access.sql --yes
+```
+
+On November 11, 2026, all three migrations and all three SQL access tests
+passed in isolated PGlite. The invite migration was then applied to hosted
+`daily-bread`; hosted invite access tests passed and rolled back their
+fixture changes. A read-only follow-up confirmed migration history, RLS,
+denied direct invite reads, authenticated-only join execution, zero fixture
+users, and zero stored invites before live browser testing.
+
+Automated browser checks with simulated Supabase responses passed for the
+invite UI, authentication transitions, retry handling, and invalid-link
+feedback. Those checks do not establish live Auth/API integration; see
+[the invite feature notes](../docs/group-invites.md) for the remaining check.
 
 ## Apply and verify
 

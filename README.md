@@ -17,8 +17,10 @@ Built with React, TypeScript, Vite, Material UI, and Supabase.
 - Load, edit, and clear your display name on the signed-in screen
 - Create a group and automatically become its owner
 - List your groups and open a basic group detail view
+- Owners can create, copy, replace, and revoke group invite links
+- Signed-in recipients can review an invitation and join as members
 
-Password reset, group invite links, and simple check-ins are planned.
+Password reset and simple check-ins are planned.
 
 ## Requirements
 
@@ -175,5 +177,7 @@ maintained on the separate `doc/planning` branch.
 Database migrations and access-check instructions are in
 [`supabase/README.md`](supabase/README.md).
 
-The groups PR scope, decisions, and remaining browser checks are recorded in
-[`docs/group-creation.md`](docs/group-creation.md).
+Group creation and its completed local checks are recorded in
+[`docs/group-creation.md`](docs/group-creation.md). Invite behavior,
+verification results, and the remaining live browser check are in
+[`docs/group-invites.md`](docs/group-invites.md).
