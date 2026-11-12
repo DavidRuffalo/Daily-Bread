@@ -70,19 +70,19 @@ On November 11, 2026:
   errors or unexpected network requests occurred. Test tooling was installed
   outside the app, and all Supabase traffic in that browser was intercepted.
 
-The remaining live browser check uses two real test accounts:
+On November 12, 2026, David completed the planned live browser check with
+two real test accounts. He created/copied an owner invite, opened it in
+another browser session, signed in with the second account, joined as
+Member, and confirmed persistence after refresh. Reopening the same link
+displayed the already-member message. After revocation, reopening the link
+displayed the invalid/expired/revoked guidance, while the member retained
+access through My groups.
 
-1. On the owner account, open a group and create/copy an invite link.
-2. Open the link in another browser session, sign in with the second
-   account, and join. Confirm Member, no owner invite controls, and the
-   group still listed after reload.
-3. Reopen the link to check the already-member path. Revoke the link on
-   the owner account, then reopen it to check the invalid-link message;
-   the member should still have access through My groups.
-
-Live Auth/API integration and the deployed invite UI are not yet verified.
-The automated browser checks use simulated responses; SQL tests impersonate
-roles in a trusted database session. Neither is a real email/signup test.
+The existing-account invite flow is verified against live Auth and the
+hosted API. Natural seven-day expiry is covered by the SQL expiry tests,
+not by waiting for a real link to age. The new-account confirmation path
+has automated coverage with simulated responses; a fresh signup through an
+invite and the deployed invite UI remain unverified.
 
 ## Review and next work
 

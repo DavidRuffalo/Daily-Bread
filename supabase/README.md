@@ -107,8 +107,12 @@ users, and zero stored invites before live browser testing.
 
 Automated browser checks with simulated Supabase responses passed for the
 invite UI, authentication transitions, retry handling, and invalid-link
-feedback. Those checks do not establish live Auth/API integration; see
-[the invite feature notes](../docs/group-invites.md) for the remaining check.
+feedback. On November 12, 2026, David also verified the existing-account
+invite flow against live Auth and the hosted API: owner link creation,
+joining as Member on a second account, persistence after refresh, the
+already-member message, revocation feedback, and retained membership after
+revocation. The deployed invite UI and fresh signup through an invite remain
+unverified. See [the invite feature notes](../docs/group-invites.md).
 
 ## Apply and verify
 

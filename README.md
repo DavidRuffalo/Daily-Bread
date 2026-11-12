@@ -179,5 +179,5 @@ Database migrations and access-check instructions are in
 
 Group creation and its completed local checks are recorded in
 [`docs/group-creation.md`](docs/group-creation.md). Invite behavior,
-verification results, and the remaining live browser check are in
+verification results, and live browser checks are in
 [`docs/group-invites.md`](docs/group-invites.md).
