@@ -64,19 +64,20 @@ On November 12, 2026:
   occurred. Tooling and fixtures stayed outside the app, and all Supabase
   browser traffic was intercepted.
 
-Remaining live browser check:
+David also completed the planned live browser checks against real Auth and
+the hosted API. He posted a check-in and confirmed persistence after reload.
+A second account in the same group saw the update and posted a Need support
+check-in; refreshing check-ins on the owner account showed the member's
+update. A separate group showed neither test update. An offline post
+displayed an error and retained both draft fields; reconnecting and retrying
+posted the update once.
 
-1. Open a group on the owner account, choose On track, and post an update.
-   Confirm the saved name/status/text and that the update survives reload.
-2. On a second account that joined the same group, open it and verify the
-   first update. Post a Need support update, then refresh check-ins on the
-   owner account to confirm it is shared.
-3. Open a separate group to confirm its history stays separate. An offline
-   post should preserve the draft and allow retry after reconnecting.
-
-Live Auth/API integration and the deployed check-in UI remain unverified.
-The SQL tests impersonate roles in a trusted database session, and automated
-browser tests use simulated API responses.
+The planned local/live check-in checks are complete. The deployed check-in
+UI remains unverified. SQL checks impersonate roles in a trusted database
+session, automated browser checks use simulated responses, and the live
+results above were confirmed by David in his browser. The live offline
+test covers a failed request followed by retry; committed requests with a
+lost response are covered by SQL and simulated browser replay checks.
 
 ## Review
 

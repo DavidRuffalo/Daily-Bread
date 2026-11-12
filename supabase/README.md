@@ -146,8 +146,11 @@ hosted `daily-bread`. Hosted check-in access tests passed and rolled back
 all fixtures. A read-only follow-up confirmed RLS, authenticated-only RPC
 execution, denied direct inserts, zero fixture accounts, and zero check-ins
 before live browser testing. Temporary automated browser checks with
-simulated Supabase responses also passed. Real two-account browser
-verification and the deployed check-in UI remain pending; see
+simulated Supabase responses also passed. David then verified live posting,
+reload persistence, shared owner/member history and posting, separate group
+histories, and an offline post that retained both draft fields and succeeded
+once after reconnecting. The planned local/live check-in checks are complete;
+the deployed check-in UI remains pending. See
 [the check-in feature notes](../docs/group-check-ins.md).
 
 ## Apply and verify
