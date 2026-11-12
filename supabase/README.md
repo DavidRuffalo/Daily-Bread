@@ -114,6 +114,42 @@ already-member message, revocation feedback, and retained membership after
 revocation. The deployed invite UI and fresh signup through an invite remain
 unverified. See [the invite feature notes](../docs/group-invites.md).
 
+## Group check-ins
+
+`migrations/20261112000000_create_group_check_ins.sql` adds `check_ins` and
+`submit_check_in(target_group_id, check_in_id, check_in_status, check_in_note)`.
+Both owners and members can submit `on_track` or `needs_support` with a
+nonblank update of up to 1,000 characters. The server derives the author
+from Auth, copies that account's current display name (or `Group member`),
+and assigns the posting time. No email addresses are copied into check-ins.
+Historical author names remain unchanged after profile edits.
+
+RLS permits reading only check-ins in groups the caller currently belongs
+to. The table has SELECT grants only for authenticated clients. Posting is
+through the authenticated-only RPC, which checks and locks membership
+before inserting. No client may directly insert, edit, delete, or move
+check-ins, including their own. The request UUID makes retrying the same
+payload return its original row; changing the author, group, status, or note
+cannot reuse that ID. Deleting a group or author administratively cascades
+to the corresponding check-ins. Removing membership revokes reading and
+posting access while retaining that author's existing posts.
+
+Run the rolled-back access checks with:
+
+```powershell
+npx.cmd supabase db query --remote=<project-ref> --file supabase/tests/check_ins_access.sql --yes
+```
+
+On November 12, 2026, all four migrations and SQL access suites passed in
+isolated PGlite. The check-in migration was then applied and recorded on
+hosted `daily-bread`. Hosted check-in access tests passed and rolled back
+all fixtures. A read-only follow-up confirmed RLS, authenticated-only RPC
+execution, denied direct inserts, zero fixture accounts, and zero check-ins
+before live browser testing. Temporary automated browser checks with
+simulated Supabase responses also passed. Real two-account browser
+verification and the deployed check-in UI remain pending; see
+[the check-in feature notes](../docs/group-check-ins.md).
+
 ## Apply and verify
 
 After reviewing the migration:
