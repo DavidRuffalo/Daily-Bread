@@ -10,6 +10,7 @@ Built with React, TypeScript, Vite, Material UI, and Supabase.
 - Email/password signup with confirmation-email instructions
 - Navigation between sign-in and signup
 - Email/password sign-in with an existing account
+- Request a password reset email and choose a new password from its link
 - Signed-in screen showing the current user's email
 - Session restoration after refreshing
 - Sign-out for the current session
@@ -21,7 +22,9 @@ Built with React, TypeScript, Vite, Material UI, and Supabase.
 - Signed-in recipients can review an invitation and join as members
 - Group members can post a status and short check-in, and read recent group updates
 
-Password reset and customizable recurring check-in forms are planned.
+Customizable recurring check-in forms are planned.
+
+See [password recovery](docs/password-recovery.md) for behavior, setup, and verification.
 
 ## Requirements
 
