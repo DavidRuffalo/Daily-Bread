@@ -3,6 +3,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { supabase } from '../lib/supabase'
+import GroupInviteControls from './GroupInviteControls'
 
 type Group = {
   id: string
@@ -11,7 +12,7 @@ type Group = {
   created_at: string
 }
 
-export default function GroupsDashboard({ userId }: { userId: string }) {
+export default function GroupsDashboard({ userId, initialGroupId = null }: { userId: string; initialGroupId?: string | null }) {
   const [groups, setGroups] = useState<Group[]>([])
   const [loading, setLoading] = useState(true)
   const [loadAttempt, setLoadAttempt] = useState(0)
@@ -20,7 +21,7 @@ export default function GroupsDashboard({ userId }: { userId: string }) {
   const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState('')
   const [message, setMessage] = useState('')
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(initialGroupId)
   const request = useRef<{ id: string; name: string } | null>(null)
 
   useEffect(() => {
@@ -99,7 +100,8 @@ export default function GroupsDashboard({ userId }: { userId: string }) {
         <Button onClick={() => setSelectedId(null)}>Back to my groups</Button>
         <h2 id="group-heading" style={{ overflowWrap: 'anywhere' }}>{selectedGroup.name}</h2>
         <p>Your role: {selectedGroup.created_by === userId ? 'Owner' : 'Member'}</p>
-        <p>This is your group space. Invite links and check-ins are coming next.</p>
+        <p>This is your group space. Check-ins are coming next.</p>
+        {selectedGroup.created_by === userId && <GroupInviteControls key={selectedGroup.id} groupId={selectedGroup.id} />}
       </Stack>
     )
   }
