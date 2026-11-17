@@ -19,8 +19,9 @@ Built with React, TypeScript, Vite, Material UI, and Supabase.
 - List your groups and open a basic group detail view
 - Owners can create, copy, replace, and revoke group invite links
 - Signed-in recipients can review an invitation and join as members
+- Group members can post a status and short check-in, and read recent group updates
 
-Password reset and simple check-ins are planned.
+Password reset and customizable recurring check-in forms are planned.
 
 ## Requirements
 
@@ -181,3 +182,5 @@ Group creation and its completed local checks are recorded in
 [`docs/group-creation.md`](docs/group-creation.md). Invite behavior,
 verification results, and live browser checks are in
 [`docs/group-invites.md`](docs/group-invites.md).
+The first check-in form, visibility rules, and validation results are in
+[`docs/group-check-ins.md`](docs/group-check-ins.md).

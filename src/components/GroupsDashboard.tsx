@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { supabase } from '../lib/supabase'
 import GroupInviteControls from './GroupInviteControls'
+import GroupCheckIns from './GroupCheckIns'
 
 type Group = {
   id: string
@@ -100,7 +101,7 @@ export default function GroupsDashboard({ userId, initialGroupId = null }: { use
         <Button onClick={() => setSelectedId(null)}>Back to my groups</Button>
         <h2 id="group-heading" style={{ overflowWrap: 'anywhere' }}>{selectedGroup.name}</h2>
         <p>Your role: {selectedGroup.created_by === userId ? 'Owner' : 'Member'}</p>
-        <p>This is your group space. Check-ins are coming next.</p>
+        <GroupCheckIns key={`check-ins-${selectedGroup.id}-${userId}`} groupId={selectedGroup.id} userId={userId} />
         {selectedGroup.created_by === userId && <GroupInviteControls key={selectedGroup.id} groupId={selectedGroup.id} />}
       </Stack>
     )
