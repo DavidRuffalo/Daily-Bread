@@ -4,6 +4,10 @@ import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import LoginForm from './components/LoginForm'
 import SignupForm from './components/SignupForm'
+import ForgotPasswordForm from './components/ForgotPasswordForm'
+import ResetPasswordForm from './components/ResetPasswordForm'
+import EmailLinkNotice from './components/EmailLinkNotice'
+import { readRecoveryUser, storeRecoveryUser } from './lib/passwordRecovery'
 import ProfileForm from './components/ProfileForm'
 import GroupsDashboard from './components/GroupsDashboard'
 import JoinGroupInvite from './components/JoinGroupInvite'
@@ -12,11 +16,16 @@ import { supabase } from './lib/supabase'
 
 
 export default function App() {
+  return <><EmailLinkNotice /><AppContent /></>
+}
+
+function AppContent() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [signingOut, setSigningOut] = useState(false)
   const [logoutError, setLogoutError] = useState('')
-  const [authScreen, setAuthScreen] = useState<'login' | 'signup'>('login')
+  const [authScreen, setAuthScreen] = useState<'login' | 'signup' | 'forgot'>('login')
+  const [recoveryUser, setRecoveryUser] = useState<string | null>(null)
   const [inviteToken, setInviteToken] = useState(readPendingInvite)
   const [joinedGroup, setJoinedGroup] = useState<{ userId: string; id: string } | null>(null)
 
@@ -54,7 +63,21 @@ export default function App() {
 
   useEffect(() => {
     const { data: { subscription } } =
-      supabase.auth.onAuthStateChange((_event, nextSession) => {
+      supabase.auth.onAuthStateChange((event, nextSession) => {
+        if (event === 'PASSWORD_RECOVERY' && nextSession) {
+          storeRecoveryUser(nextSession.user.id)
+          setRecoveryUser(nextSession.user.id)
+        } else if (!nextSession) {
+          storeRecoveryUser(null)
+          setRecoveryUser(null)
+          setAuthScreen('login')
+        } else {
+          const storedUser = readRecoveryUser()
+          setRecoveryUser((current) => current === nextSession.user.id
+            ? current
+            : storedUser === nextSession.user.id ? storedUser : null)
+          if (storedUser !== nextSession.user.id) storeRecoveryUser(null)
+        }
         setSession(nextSession)
         setLoading(false)
       })
@@ -90,7 +113,9 @@ export default function App() {
   if (!session) {
     const form = authScreen === 'signup'
       ? <SignupForm onSignIn={() => setAuthScreen('login')} />
-      : <LoginForm onSignup={() => setAuthScreen('signup')} />
+      : authScreen === 'forgot'
+        ? <ForgotPasswordForm onSignIn={() => setAuthScreen('login')} />
+        : <LoginForm onSignup={() => setAuthScreen('signup')} onForgotPassword={() => setAuthScreen('forgot')} />
     return (
       <>
         {inviteToken !== null && (
@@ -102,6 +127,12 @@ export default function App() {
         {form}
       </>
     )
+  }
+
+  if (recoveryUser === session.user.id) {
+    return <ResetPasswordForm key={session.user.id} email={session.user.email}
+      onContinue={() => { storeRecoveryUser(null); setRecoveryUser(null) }}
+      onSignOut={handleLogout} signingOut={signingOut} logoutError={logoutError} />
   }
 
   return (
