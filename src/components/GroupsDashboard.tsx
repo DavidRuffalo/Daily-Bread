@@ -101,7 +101,7 @@ export default function GroupsDashboard({ userId, initialGroupId = null }: { use
         <Button onClick={() => setSelectedId(null)}>Back to my groups</Button>
         <h2 id="group-heading" style={{ overflowWrap: 'anywhere' }}>{selectedGroup.name}</h2>
         <p>Your role: {selectedGroup.created_by === userId ? 'Owner' : 'Member'}</p>
-        <GroupCheckIns key={`check-ins-${selectedGroup.id}-${userId}`} groupId={selectedGroup.id} userId={userId} />
+        <GroupCheckIns key={`check-ins-${selectedGroup.id}-${userId}`} groupId={selectedGroup.id} userId={userId} isOwner={selectedGroup.created_by === userId} />
         {selectedGroup.created_by === userId && <GroupInviteControls key={selectedGroup.id} groupId={selectedGroup.id} />}
       </Stack>
     )

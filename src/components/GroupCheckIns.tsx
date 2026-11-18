@@ -14,10 +14,12 @@ type CheckIn = {
   author_name: string
   status: CheckInStatus
   note: string
+  prompt: string
   created_at: string
 }
 
-export default function GroupCheckIns({ groupId, userId }: { groupId: string; userId: string }) {
+export default function GroupCheckIns({ groupId, userId, isOwner }: { groupId: string; userId: string; isOwner: boolean }) {
+  const [prompt, setPrompt] = useState('')
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const [loading, setLoading] = useState(true)
   const [loadAttempt, setLoadAttempt] = useState(0)
@@ -27,7 +29,7 @@ export default function GroupCheckIns({ groupId, userId }: { groupId: string; us
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [message, setMessage] = useState('')
-  const request = useRef<{ id: string; status: CheckInStatus; note: string } | null>(null)
+  const request = useRef<{ id: string; status: CheckInStatus; note: string; prompt: string } | null>(null)
 
   useEffect(() => {
     let ignore = false
@@ -35,19 +37,23 @@ export default function GroupCheckIns({ groupId, userId }: { groupId: string; us
 
     async function loadCheckIns() {
       try {
-        const { data, error } = await supabase
+        const [history, settings] = await Promise.all([supabase
           .from('check_ins')
-          .select('id, group_id, user_id, author_name, status, note, created_at')
+          .select('id, group_id, user_id, author_name, status, note, prompt, created_at')
           .eq('group_id', groupId)
           .order('created_at', { ascending: false })
           .order('id', { ascending: false })
           .limit(20)
           .abortSignal(controller.signal)
-          .returns<CheckIn[]>()
+          .returns<CheckIn[]>(),
+        supabase.from('groups').select('check_in_prompt').eq('id', groupId)
+          .abortSignal(controller.signal).single<{ check_in_prompt: string }>()])
 
         if (ignore) return
-        if (error) throw error
-        setCheckIns(data)
+        if (history.error) throw history.error
+        if (settings.error) throw settings.error
+        setCheckIns(history.data)
+        setPrompt(settings.data.check_in_prompt)
       } catch {
         if (!ignore) setLoadError('Unable to load check-ins. Check your connection and try again.')
       } finally {
@@ -82,7 +88,7 @@ export default function GroupCheckIns({ groupId, userId }: { groupId: string; us
     setSubmitting(true)
     try {
       if (!request.current || request.current.status !== status || request.current.note !== trimmedNote) {
-        request.current = { id: crypto.randomUUID(), status, note: trimmedNote }
+        request.current = { id: crypto.randomUUID(), status, note: trimmedNote, prompt }
       }
       const { data, error } = await supabase
         .rpc('submit_check_in', {
@@ -90,11 +96,16 @@ export default function GroupCheckIns({ groupId, userId }: { groupId: string; us
           check_in_id: request.current.id,
           check_in_status: status,
           check_in_note: trimmedNote,
+          expected_prompt: request.current.prompt,
         })
         .single<CheckIn>()
       if (error) {
         if (error.code === '42501') setSubmitError('You must be signed in and belong to this group to post a check-in.')
         else if (error.code === '22023') setSubmitError('Choose a status and write an update between 1 and 1,000 characters.')
+        else if (error.code === 'P0002') {
+          request.current = null
+          setSubmitError('The check-in question has changed. Refresh check-ins and review the new question before posting. Your draft has been kept.')
+        }
         else setSubmitError('Unable to confirm your check-in. Check your connection and try again. Your draft has been kept.')
         return
       }
@@ -116,8 +127,17 @@ export default function GroupCheckIns({ groupId, userId }: { groupId: string; us
   return (
     <Stack component="section" spacing={2} aria-labelledby="check-ins-heading">
       <h3 id="check-ins-heading">Check-ins</h3>
+      {isOwner && prompt && (
+        <CheckInPromptEditor key={prompt} groupId={groupId} prompt={prompt} disabled={loading || submitting || !!loadError}
+          onSaved={(saved) => {
+            setPrompt(saved)
+            setSubmitError('')
+            setMessage('Check-in question saved. Existing posts keep their original question.')
+          }} />
+      )}
       <Stack component="form" spacing={2} onSubmit={handleSubmit} aria-label="Post a check-in" aria-busy={submitting}>
-        <p>Share how you are doing with your goals. Your update and display name are visible to members of this group.</p>
+        {prompt && <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}><strong>{prompt}</strong></p>}
+        <p>Your update and display name are visible to members of this group.</p>
         <TextField
           select
           label="How are you doing?"
@@ -168,6 +188,7 @@ export default function GroupCheckIns({ groupId, userId }: { groupId: string; us
                 <Stack component="li" key={checkIn.id} spacing={1} sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2, overflowWrap: 'anywhere' }}>
                   <strong>{checkIn.author_name}{checkIn.user_id === userId ? ' (you)' : ''} — {statusLabels[checkIn.status]}</strong>
                   <time dateTime={checkIn.created_at}>{new Date(checkIn.created_at).toLocaleString()}</time>
+                  <p style={{ whiteSpace: 'pre-wrap' }}><strong>Question: </strong>{checkIn.prompt}</p>
                   <p style={{ whiteSpace: 'pre-wrap' }}>{checkIn.note}</p>
                 </Stack>
               ))}
@@ -175,6 +196,52 @@ export default function GroupCheckIns({ groupId, userId }: { groupId: string; us
           )}
         </>
       )}
+    </Stack>
+  )
+}
+
+function CheckInPromptEditor({ groupId, prompt, disabled, onSaved }: {
+  groupId: string; prompt: string; disabled: boolean; onSaved: (prompt: string) => void
+}) {
+  const [draft, setDraft] = useState(prompt)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (saving || disabled) return
+    const trimmed = draft.trim()
+    if (Array.from(trimmed).length < 1 || Array.from(trimmed).length > 300) {
+      setError('Write a question between 1 and 300 characters.')
+      return
+    }
+    setSaving(true)
+    setError('')
+    try {
+      const { data, error } = await supabase.rpc('set_check_in_prompt', { target_group_id: groupId, new_prompt: trimmed })
+      if (error) {
+        if (error.code === '42501') setError('Only the group owner can change the question.')
+        else if (error.code === '22023') setError('Write a question between 1 and 300 characters.')
+        else setError('Unable to confirm the question was saved. Check your connection and try again. Your draft has been kept.')
+        return
+      }
+      onSaved(data as string)
+    } catch {
+      setError('Unable to confirm the question was saved. Check your connection and try again. Your draft has been kept.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <Stack component="form" spacing={2} onSubmit={save} aria-label="Edit check-in question" aria-busy={saving}>
+      <TextField label="Check-in question" required multiline minRows={2} value={draft}
+        helperText="Between 1 and 300 characters. Changes apply to future check-ins."
+        disabled={disabled || saving} onChange={(event) => { setDraft(event.target.value); setError('') }} />
+      <Button type="submit" disabled={disabled || saving || !draft.trim() || draft.trim() === prompt}>
+        {saving ? 'Saving question...' : 'Save question'}
+      </Button>
+      {error && <p role="alert">{error}</p>}
     </Stack>
   )
 }

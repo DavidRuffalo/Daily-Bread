@@ -29,12 +29,13 @@ The dashboard starts as a shell. New pieces get added to it as each feature land
 
 - **Groups only for now.** Communities above groups come later.
 - **Message-board style communication**, not real-time chat, when we get to it.
+- **Invite links** let signed-in recipients join a group.
+- **Owner and member** are the current group roles.
+- **Status check-ins with a short update** are the first accountability feature.
 
 ## Open Decisions
 
-- What is the first core accountability feature after group creation? (check-in forms, invites, message board, ...)
-- How do members join a group? (invite link, email, code)
-- How much of the roles/permissions system goes in the MVP? (owner vs. member only?)
+- Which recurring form and scheduling behavior should follow owner-customized check-in questions?
 
 ## Later / Backlog
 
