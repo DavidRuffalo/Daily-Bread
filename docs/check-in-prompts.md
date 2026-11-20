@@ -75,17 +75,19 @@ trusted database session; they do not test browser authentication or the
 Supabase HTTP API.
 
 On November 18, 2026, David confirmed in his local browser against hosted
-Supabase that an owner-edited question persisted after reloading. Member
-visibility/posting, stale-question handling, historical questions, offline
-save/retry, group isolation, and deployed feature checks remain pending.
+Supabase that an owner-edited question persisted after reloading. On November
+20, 2026, David also confirmed that a separate member account could see the
+owner's saved question. Member posting/shared history, stale-question
+handling, historical questions, offline save/retry, group isolation, and
+deployed feature checks remain pending.
 
 ## Live browser checklist
 
 After applying the migration and running its rolled-back access suite:
 
 1. Completed: David confirmed that an owner-edited question persists after reload.
-2. As member in another browser, open the group and post an answer. Confirm
-   the owner sees the answer with its question.
+2. Member question visibility is confirmed. As member, post an answer, then
+   confirm the owner sees the answer with its question.
 3. Keep a member draft open, then change the question as owner. Confirm the
    member's post is rejected, Refresh check-ins keeps the draft, and posting
    after reviewing the new question succeeds. Earlier posts keep their question.
