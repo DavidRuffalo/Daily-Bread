@@ -79,9 +79,11 @@ Supabase that an owner-edited question persisted after reloading. On November
 20, 2026, David also confirmed that a separate member account could see the
 owner's saved question. He then posted a check-in from the member account
 and confirmed that refreshing check-ins on the owner account displayed
-the member's answer with the correct question. Stale-question handling,
-historical questions after an owner edit, offline save/retry, group isolation,
-and deployed feature checks remain pending.
+the member's answer with the correct question. With a member draft left open,
+he changed the question as owner, then confirmed that posting from the member
+account showed the question-changed message and retained the draft.
+Refresh/retry after that rejection, historical questions after an owner edit,
+offline save/retry, group isolation, and deployed feature checks remain pending.
 
 ## Live browser checklist
 
@@ -90,9 +92,9 @@ After applying the migration and running its rolled-back access suite:
 1. Completed: David confirmed that an owner-edited question persists after reload.
 2. Completed: the member sees the saved question and can post an answer;
    the owner sees that answer with the correct question after refreshing check-ins.
-3. Keep a member draft open, then change the question as owner. Confirm the
-   member's post is rejected, Refresh check-ins keeps the draft, and posting
-   after reviewing the new question succeeds. Earlier posts keep their question.
+3. Stale-question rejection and draft retention are confirmed. Next, confirm
+   Refresh check-ins keeps the draft and posting after reviewing the new
+   question succeeds. Earlier posts must keep their original question.
 4. Save a question while offline. Confirm feedback and draft retention, then
    reconnect and retry. Confirm another group keeps its own question.
 
