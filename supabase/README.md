@@ -155,6 +155,32 @@ the deployed check-in UI remains pending. See
 
 ## Apply and verify
 
+### Check-in questions
+
+`migrations/20261118000000_add_check_in_prompts.sql` adds a default question
+to each group and snapshots the question on check-ins. Only owners may use
+`set_check_in_prompt(target_group_id, new_prompt)`. The updated
+`submit_check_in` accepts optional `expected_prompt` to reject stale forms
+while preserving committed retries. Existing four-argument calls still work.
+
+The migration was applied to hosted `daily-bread` on November 18, 2026.
+When setting up another environment, apply it before using the new UI,
+then run the rolled-back checks:
+
+```powershell
+npx.cmd supabase db query --remote=<project-ref> --file supabase/tests/check_in_prompts_access.sql --yes
+```
+
+All five migrations and all five SQL access suites passed locally in
+isolated PGlite on November 18, 2026. The prompt and existing check-in access
+suites also passed on hosted Supabase. A read-only follow-up verified
+migration history, RLS, RPC grants, denied direct edits, backfilled questions,
+unchanged real row counts, and zero remaining fixture accounts. Live browser
+and deployed feature checks remain pending. See
+[check-in questions](../docs/check-in-prompts.md) for the live browser checklist.
+
+### Migration commands
+
 After reviewing the migration:
 
 1. Authenticate the Supabase CLI with `npx.cmd supabase login`.

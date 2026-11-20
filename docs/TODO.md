@@ -1,6 +1,8 @@
 # TODO
 
-Progress below includes app commit `df2c3e8`, pushed on `feature/app-setup`; PR/merge status has not been verified. See [app-setup.md](app-setup.md) for the current PR goal, completed checks, and wrap-up work.
+PRs #1–#9 were verified merged on November 17, 2026. Pages successfully
+deployed `main` at `17278f4`. The original [app-setup.md](app-setup.md) is
+a historical setup handoff; feature notes record later validation results.
 
 ## Setup (shared)
 
@@ -12,22 +14,35 @@ Progress below includes app commit `df2c3e8`, pushed on `feature/app-setup`; PR/
 ## Track A: Auth
 
 - [x] Set up the Supabase client
-- [ ] Sign-up page
+- [x] Sign-up page
 - [x] Log-in page
 - [x] Log out
 - [x] Session / auth state handling
 - [ ] Protected-route wrapper
-- [ ] `profiles` table linked to `auth.users`
+- [x] `profiles` table linked to `auth.users`
+- [x] Password recovery UI
+- [ ] Live reset-email and password-change verification
 
 ## Track B: Groups + Dashboard
 
-- [ ] `groups` table
-- [ ] `group_members` table (creator = owner)
-- [ ] Basic RLS policies for groups and members
-- [ ] Create-group form
-- [ ] Dashboard listing my groups
-- [ ] Group detail page (stub)
+- [x] `groups` table
+- [x] `group_members` table (creator = owner)
+- [x] Basic RLS policies for groups and members
+- [x] Create-group form
+- [x] Dashboard listing my groups
+- [x] Group detail page
+- [x] Owner invite links and member joining
+- [x] Status check-ins and recent group history
+
+## Current feature: check-in questions
+
+- [x] Local migration, owner editor, member question, and historical snapshots
+- [x] Local SQL access checks and simulated browser checks
+- [x] Apply hosted migration and run hosted access checks
+- [ ] Complete [live browser checks](check-in-prompts.md#live-browser-checklist)
+- [ ] Obtain collaborator review after live browser validation
 
 ## Next Up
 
-- [ ] Settle the [open decisions](daily-bread.md#open-decisions) before starting the next feature
+- [ ] Verify the deployed auth, profiles, groups, invites, and check-in flows
+- [ ] Choose the next increment toward recurring accountability forms

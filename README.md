@@ -21,8 +21,12 @@ Built with React, TypeScript, Vite, Material UI, and Supabase.
 - Owners can create, copy, replace, and revoke group invite links
 - Signed-in recipients can review an invitation and join as members
 - Group members can post a status and short check-in, and read recent group updates
+- Owners can customize the group's check-in question; posts retain their original question
 
 Customizable recurring check-in forms are planned.
+
+See [check-in questions](docs/check-in-prompts.md) for the required new
+database migration and validation status before testing this feature.
 
 See [password recovery](docs/password-recovery.md) for behavior, setup, and verification.
 
